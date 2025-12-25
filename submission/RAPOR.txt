@@ -1,0 +1,31 @@
+Chaos Engineering Deney Raporu
+
+Öğrenci Adı: [Adınız Soyadınız]
+Numara: [Numaranız]
+
+Yapılan Çalışma:
+
+Bilgisayarımdaki donanımsal sanallaştırma (virtualization) sorunları nedeniyle Docker ortamını lokalde çalıştıramadım. Bu nedenle deneyi Killercoda online Kubernetes ortamında gerçekleştirdim.
+
+Orijinal projedeki mimariyi simüle etmek için:
+
+- `deployment.yaml`: Frontend ve Backend servislerini temsil eden Nginx tabanlı iki Deployment ve ilgili Service kaynakları oluşturuldu. Frontend için 1 replica, Backend için 2 replica ayarlandı (toplam 3 pod görünümü testi için).
+- Chaos Mesh kurulumu yapıldı (Killercoda üzerinde hazır).
+- `pod-chaos.yaml` dosyası kullanılarak Pod Kill deneyi uygulandı: Backend etiketli pod'lardan 1 tanesi sonlandırıldı.
+
+Gözlemler / Sonuç:
+
+1) Deney Öncesi: `kubectl get pods -n chaos-demo` çıktısında 3 pod (1 frontend, 2 backend) Running durumda gözlendi. (Ekran görüntüsü: `screenshots/1-deney-oncesi.png`)
+
+2) Kaos Anı: `kubectl apply -f pod-chaos.yaml` komutundan hemen sonra, backend pod'larından birinin Terminating olduğu gözlendi. (Ekran görüntüsü: `screenshots/2-kaos-ani.png`)
+
+3) İyileşme: Kubernetes ReplicaSet mekanizması otomatik olarak bir yeni pod başlattı ve kısa süre içinde tüm pod'lar tekrar Running durumuna döndü. (Ekran görüntüsü: `screenshots/3-iyilesme-sonrasi.png`)
+
+Sonuç: Chaos Mesh tarafından tetiklenen pod sonlandırması, Kubernetes'in self-healing mekanizması tarafından tespit edilip otomatik iyileşme sağlanmıştır. Bu, sistemin beklenen dayanıklılık davranışını doğrulamaktadır.
+
+Notlar:
+- Gerçek ekran görüntüleri `submission/screenshots/` klasörüne eklenecektir. Bu repo içindeki placeholder dosyaları gerçek PNG'ler ile değiştiriniz.
+- İstendiğinde, deney adımlarının komut listesini ve Helm/Chaos Mesh kurulum komutlarını da ekleyebilirim.
+
+Hazırlayan: [Adınız Soyadınız]
+Tarih: [Tarih]

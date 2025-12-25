@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-backend
+  namespace: chaos-demo
+spec:
+  action: kill
+  mode: one
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  duration: "2m"
