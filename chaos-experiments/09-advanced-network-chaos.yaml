@@ -1,0 +1,112 @@
+# Advanced Network Chaos Experiments
+# Extreme packet loss, bandwidth throttling, jitter
+
+---
+# High Packet Loss - 80% packet loss with correlation
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-high-packet-loss
+  namespace: chaos-demo
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  loss:
+    loss: "80"                # 80% packet loss
+    correlation: "50"         # 50% correlation between losses
+  direction: to
+  target:
+    selector:
+      namespaces:
+        - chaos-demo
+      labelSelectors:
+        app: backend
+    mode: all
+  duration: "3m"
+---
+# Bandwidth Limit - Restrict bandwidth between services
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-bandwidth-limit
+  namespace: chaos-demo
+spec:
+  action: bandwidth
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  bandwidth:
+    rate: "1mbps"             # Limit to 1 Mbps
+    limit: 32                 # Number of packets to hold in queue
+    buffer: 16                # Buffer size
+  direction: to
+  target:
+    selector:
+      namespaces:
+        - chaos-demo
+      labelSelectors:
+        app: backend
+    mode: all
+  duration: "3m"
+---
+# Network Corruption - Corrupt 20% of packets
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-packet-corruption
+  namespace: chaos-demo
+spec:
+  action: corrupt
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  corrupt:
+    corrupt: "20"             # Corrupt 20% of packets
+    correlation: "10"
+  direction: to
+  target:
+    selector:
+      namespaces:
+        - chaos-demo
+      labelSelectors:
+        app: backend
+    mode: all
+  duration: "2m"
+---
+# Network Duplication - Duplicate 15% of packets
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-packet-duplication
+  namespace: chaos-demo
+spec:
+  action: duplicate
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  duplicate:
+    duplicate: "15"           # Duplicate 15% of packets
+    correlation: "5"
+  direction: to
+  target:
+    selector:
+      namespaces:
+        - chaos-demo
+      labelSelectors:
+        app: backend
+    mode: all
+  duration: "2m"

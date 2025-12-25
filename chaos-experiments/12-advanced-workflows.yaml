@@ -1,0 +1,362 @@
+# Advanced Chaos Workflows
+# Complex scenarios combining multiple chaos types
+
+---
+# Complete Chaos Cascade - Run multiple chaos scenarios
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: complete-chaos-cascade
+  namespace: chaos-demo
+spec:
+  entry: cascade-entry
+  templates:
+    # Main entry point
+    - name: cascade-entry
+      templateType: Serial
+      deadline: "30m"
+      children:
+        - phase-1-network
+        - phase-2-resource
+        - phase-3-recovery
+
+    # Phase 1: Network degradation
+    - name: phase-1-network
+      templateType: Serial
+      deadline: "10m"
+      children:
+        - delay-injection
+        - packet-loss-injection
+        - bandwidth-limit
+
+    # Step: Inject network delay
+    - name: delay-injection
+      templateType: NetworkChaos
+      deadline: "2m"
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        delay:
+          latency: "1s"
+          jitter: "200ms"
+        direction: to
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all
+
+    # Step: Inject packet loss
+    - name: packet-loss-injection
+      templateType: NetworkChaos
+      deadline: "2m"
+      networkChaos:
+        action: loss
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        loss:
+          loss: "50"
+          correlation: "30"
+        direction: to
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all
+
+    # Step: Limit bandwidth
+    - name: bandwidth-limit
+      templateType: NetworkChaos
+      deadline: "3m"
+      networkChaos:
+        action: bandwidth
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        bandwidth:
+          rate: "5mbps"
+          limit: 32
+          buffer: 16
+        direction: to
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all
+
+    # Phase 2: Resource degradation
+    - name: phase-2-resource
+      templateType: Serial
+      deadline: "10m"
+      children:
+        - cpu-stress
+        - memory-stress
+        - io-latency
+
+    # Step: CPU stress
+    - name: cpu-stress
+      templateType: StressChaos
+      deadline: "3m"
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        stressors:
+          cpu:
+            workers: 2
+            load: 90
+
+    # Step: Memory stress
+    - name: memory-stress
+      templateType: StressChaos
+      deadline: "3m"
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        stressors:
+          memory:
+            workers: 2
+            size: "200Mi"
+
+    # Step: IO latency
+    - name: io-latency
+      templateType: IOChaos
+      deadline: "2m"
+      ioChaos:
+        action: latency
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        volumePath: /app
+        delay: "500ms"
+        percent: 50
+
+    # Phase 3: Pod disruption
+    - name: phase-3-recovery
+      templateType: Serial
+      deadline: "10m"
+      children:
+        - pod-failure
+        - pod-recovery-wait
+
+    # Step: Pod failure
+    - name: pod-failure
+      templateType: PodChaos
+      deadline: "2m"
+      podChaos:
+        action: pod-failure
+        mode: one
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+
+    # Step: Wait for recovery
+    - name: pod-recovery-wait
+      templateType: Suspend
+      deadline: "5m"
+
+---
+# Parallel Chaos - Run multiple experiments simultaneously
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: parallel-chaos-experiment
+  namespace: chaos-demo
+spec:
+  entry: parallel-entry
+  templates:
+    # Main entry point - run all in parallel
+    - name: parallel-entry
+      templateType: Parallel
+      deadline: "8m"
+      children:
+        - parallel-network
+        - parallel-stress
+        - parallel-http
+
+    # Network chaos in parallel
+    - name: parallel-network
+      templateType: NetworkChaos
+      deadline: "5m"
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        delay:
+          latency: "500ms"
+        direction: to
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all
+
+    # Stress chaos in parallel
+    - name: parallel-stress
+      templateType: StressChaos
+      deadline: "5m"
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        stressors:
+          cpu:
+            workers: 1
+            load: 70
+
+    # HTTP chaos in parallel
+    - name: parallel-http
+      templateType: HTTPChaos
+      deadline: "5m"
+      httpChaos:
+        port: 5001
+        target: Response
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        abort:
+          httpStatus: 500
+
+---
+# Conditional Workflow - Run different chaos based on conditions
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: chaos-with-recovery
+  namespace: chaos-demo
+spec:
+  entry: recovery-workflow
+  templates:
+    # Main workflow with recovery strategy
+    - name: recovery-workflow
+      templateType: Serial
+      deadline: "20m"
+      children:
+        - inject-chaos
+        - monitor-pause
+        - cleanup-chaos
+
+    # Inject chaos
+    - name: inject-chaos
+      templateType: Serial
+      deadline: "10m"
+      children:
+        - network-chaos-injection
+        - stress-injection
+
+    # Network chaos
+    - name: network-chaos-injection
+      templateType: NetworkChaos
+      deadline: "3m"
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        delay:
+          latency: "2s"
+          jitter: "500ms"
+        direction: both
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all
+
+    # Stress injection
+    - name: stress-injection
+      templateType: StressChaos
+      deadline: "3m"
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: backend
+        stressors:
+          memory:
+            workers: 1
+            size: "150Mi"
+
+    # Monitor and pause
+    - name: monitor-pause
+      templateType: Suspend
+      deadline: "5m"
+
+    # Cleanup chaos experiments
+    - name: cleanup-chaos
+      templateType: Serial
+      deadline: "2m"
+      children:
+        - remove-network-chaos
+
+    # Remove network chaos
+    - name: remove-network-chaos
+      templateType: NetworkChaos
+      deadline: "1m"
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+            - chaos-demo
+          labelSelectors:
+            app: frontend
+        delay:
+          latency: "0ms"
+        direction: to
+        target:
+          selector:
+            namespaces:
+              - chaos-demo
+            labelSelectors:
+              app: backend
+          mode: all

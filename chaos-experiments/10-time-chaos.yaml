@@ -1,0 +1,53 @@
+# Time Chaos Experiments
+# Manipulate system time and clock
+
+---
+# Clock Skew - Move system time forward
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-clock-skew-forward
+  namespace: chaos-demo
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  timeOffset: "1h"            # Move clock forward by 1 hour
+  duration: "3m"
+---
+# Clock Skew Backward - Move system time backward
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-clock-skew-backward
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  timeOffset: "-30m"          # Move clock backward by 30 minutes
+  duration: "3m"
+---
+# Clock Jump - Large sudden time jump
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-clock-jump
+  namespace: chaos-demo
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  timeOffset: "24h"           # Jump 24 hours ahead
+  clockIds:
+    - "CLOCK_REALTIME"
+  duration: "2m"

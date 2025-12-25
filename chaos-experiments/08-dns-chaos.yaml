@@ -1,0 +1,58 @@
+# DNS Chaos Experiments
+# DNS manipulation and spoofing
+
+---
+# DNS Spoofing - Redirect DNS queries
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-spoofing-experiment
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  action: replace
+  patterns:
+    - "backend"               # Match DNS queries for 'backend'
+  records:
+    - name: "backend"
+      recordType: A
+      data: "10.0.0.1"        # Redirect to non-existent IP
+  duration: "3m"
+---
+# DNS Random - Return random DNS responses
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-random-experiment
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  action: random
+  duration: "2m"
+---
+# DNS Latency - Add delay to DNS resolution
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-latency-experiment
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  action: delay
+  delay: 5                    # 5 second delay for DNS queries
+  duration: "3m"

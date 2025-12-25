@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_APP=backend.py
+      - FLASK_ENV=development
+    ports:
+      - "5001:5001"
+    command: python -m flask run --host=0.0.0.0 --port=5001
+    networks:
+      - chaos-demo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - BACKEND_SERVICE=http://backend:5001
+    ports:
+      - "5000:5000"
+    command: python -m flask run --host=0.0.0.0 --port=5000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - chaos-demo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+networks:
+  chaos-demo:
+    driver: bridge
