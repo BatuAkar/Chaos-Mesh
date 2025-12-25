@@ -1,0 +1,186 @@
+
+================================================================================
+CHAOS ENGINEERING - SIMULATION TEST SUITE
+================================================================================
+Testing various chaos scenarios with simulated conditions
+================================================================================
+
+📡 Test 1: Network Delay Chaos (500ms simulated)
+------------------------------------------------------------
+  Request 1: 501.09ms
+  Request 2: 500.42ms
+  Request 3: 500.56ms
+  Request 4: 500.66ms
+  Request 5: 500.66ms
+  Request 6: 500.26ms
+  Request 7: 500.55ms
+  Request 8: 500.77ms
+  Request 9: 500.84ms
+  Request 10: 500.77ms
+
+✅ Average latency: 500.66ms (baseline ~500ms)
+
+📦 Test 2: Packet Loss Chaos (30% loss simulated)
+------------------------------------------------------------
+  Request 1: ✗ Lost (packet loss)
+  Request 2: ✓ Success (50.73ms)
+  Request 3: ✓ Success (50.73ms)
+  Request 4: ✗ Lost (packet loss)
+  Request 5: ✓ Success (50.71ms)
+  Request 6: ✓ Success (50.81ms)
+  Request 7: ✗ Lost (packet loss)
+  Request 8: ✓ Success (50.33ms)
+  Request 9: ✓ Success (50.25ms)
+  Request 10: ✗ Lost (packet loss)
+  Request 11: ✗ Lost (packet loss)
+  Request 12: ✓ Success (50.15ms)
+  Request 13: ✓ Success (50.43ms)
+  Request 14: ✓ Success (50.14ms)
+  Request 15: ✓ Success (50.38ms)
+  Request 16: ✗ Lost (packet loss)
+  Request 17: ✓ Success (50.18ms)
+  Request 18: ✓ Success (50.43ms)
+  Request 19: ✓ Success (50.51ms)
+  Request 20: ✗ Lost (packet loss)
+
+📊 Results:
+   Successful: 13/20
+   Failed: 7/20
+   Success Rate: 65.0%
+
+🚦 Test 3: Bandwidth Throttle (1 Mbps simulated)
+------------------------------------------------------------
+  Transfer 1: 125.20ms (128KB @ 1Mbps)
+  Transfer 2: 125.41ms (128KB @ 1Mbps)
+  Transfer 3: 125.45ms (128KB @ 1Mbps)
+  Transfer 4: 125.44ms (128KB @ 1Mbps)
+  Transfer 5: 125.48ms (128KB @ 1Mbps)
+  Transfer 6: 125.77ms (128KB @ 1Mbps)
+  Transfer 7: 125.52ms (128KB @ 1Mbps)
+  Transfer 8: 125.66ms (128KB @ 1Mbps)
+
+✅ Average transfer time: 125.49ms
+
+⚙️  Test 4: CPU Stress Impact
+------------------------------------------------------------
+  Phase 1: Baseline (no stress)
+    Average: 10.67ms
+  Phase 2: Under CPU stress
+    Average: 540.80ms
+
+✅ Performance degradation: 4970.0%
+
+🔗 Test 5: Cascading Failure
+------------------------------------------------------------
+  Phase 1: Normal operation
+    Request 1: ✓ Success (56.80ms)
+    Request 2: ✓ Success (50.68ms)
+    Request 3: ✓ Success (50.41ms)
+  Phase 2: Service degradation (backend slow)
+    Request 1: ⚠️  Slow (300.26ms)
+    Request 2: ⚠️  Slow (300.56ms)
+    Request 3: ⚠️  Slow (300.68ms)
+  Phase 3: Service failure (backend down)
+    Request 1: ✗ Failed (backend unavailable)
+    Request 2: ✗ Failed (backend unavailable)
+    Request 3: ✗ Failed (backend unavailable)
+
+📊 Results:
+   Initial success: 3/3
+   Degraded requests: 3/3
+   Failed requests: 3/3
+   Overall failure rate: 33.3%
+
+📛 Test 6: DNS Chaos (name resolution delays)
+------------------------------------------------------------
+  DNS Resolution attempts:
+  Lookup 1: 200.56ms (backend service)
+  Lookup 2: 200.52ms (backend service)
+  Lookup 3: 200.40ms (backend service)
+  Lookup 4: 200.38ms (backend service)
+  Lookup 5: 200.53ms (backend service)
+  Lookup 6: 200.23ms (backend service)
+  Lookup 7: 200.10ms (backend service)
+  Lookup 8: 200.53ms (backend service)
+
+✅ Average DNS resolution time: 200.41ms
+
+💾 Test 7: Memory Pressure
+------------------------------------------------------------
+  Allocating memory and measuring request latency:
+  Request 1 (Memory: ~40MB): 101.08ms
+  Request 2 (Memory: ~80MB): 104.46ms
+  Request 3 (Memory: ~120MB): 101.81ms
+  Request 4 (Memory: ~160MB): 100.28ms
+  Request 5 (Memory: ~200MB): 100.97ms
+
+✅ Average latency under memory pressure: 101.72ms
+
+================================================================================
+CHAOS ENGINEERING TEST REPORT
+================================================================================
+Generated: 2025-12-25T17:19:37.323516
+================================================================================
+
+📊 Network Delay (500ms)
+   Average: 500.66ms
+   Maximum: 501.09ms
+   Minimum: 500.26ms
+   Std Dev: 0.23ms
+   Samples: 10
+
+📊 Packet Loss (30%)
+   Average: 50.45ms
+   Maximum: 50.81ms
+   Minimum: 50.14ms
+   Std Dev: 0.24ms
+   Samples: 13
+
+📊 Bandwidth Throttle (1Mbps)
+   Average: 125.49ms
+   Maximum: 125.77ms
+   Minimum: 125.20ms
+   Std Dev: 0.17ms
+   Samples: 8
+
+📊 CPU Stress
+   Average: 275.73ms
+   Maximum: 542.23ms
+   Minimum: 10.60ms
+   Std Dev: 290.37ms
+   Samples: 6
+
+📊 Cascading Failure
+   Average: 176.56ms
+   Maximum: 300.68ms
+   Minimum: 50.41ms
+   Std Dev: 135.79ms
+   Samples: 6
+
+📊 DNS Chaos
+   Average: 200.41ms
+   Maximum: 200.56ms
+   Minimum: 200.10ms
+   Std Dev: 0.17ms
+   Samples: 8
+
+📊 Memory Pressure
+   Average: 101.72ms
+   Maximum: 104.46ms
+   Minimum: 100.28ms
+   Std Dev: 1.62ms
+   Samples: 5
+
+================================================================================
+📈 OVERALL STATISTICS
+================================================================================
+Total Requests: 56
+Average Latency: 205.21ms
+Median Latency: 125.47ms
+P99 Latency: 540.54ms
+P95 Latency: 501.09ms
+Max Latency: 542.23ms
+
+================================================================================
+✅ TEST SUITE COMPLETED
+================================================================================

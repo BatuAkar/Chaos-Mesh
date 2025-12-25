@@ -1,0 +1,22 @@
+"""
+Pod Kill Experiments
+Random pod termination to test controller resilience and restarts.
+"""
+
+---
+# Pod Kill - Kill a percentage of frontend pods
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-random
+  namespace: chaos-demo
+spec:
+  action: kill
+  mode: fixed-percent
+  value: "30"              # Kill 30% of matching pods
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: frontend
+  duration: "2m"

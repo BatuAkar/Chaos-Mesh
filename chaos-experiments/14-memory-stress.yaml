@@ -1,0 +1,24 @@
+"""
+Memory Stress Experiments
+Fill memory to observe OOM handling and eviction.
+"""
+
+---
+# Memory Stress - Allocate large memory
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-high
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  stressors:
+    memory:
+      workers: 2
+      size: "1Gi"
+  duration: "3m"

@@ -1,0 +1,24 @@
+"""
+Disk Fill / Filesystem Stress
+Fill disk space inside pods to test logging and storage handling.
+"""
+
+---
+# Disk Fill - Create large temporary files
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: disk-fill-filesystem
+  namespace: chaos-demo
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - chaos-demo
+    labelSelectors:
+      app: backend
+  stressors:
+    filesystem:
+      workers: 2
+      size: "2Gi"
+  duration: "2m"
