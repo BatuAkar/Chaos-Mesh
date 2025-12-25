@@ -1,7 +1,8 @@
+
 Chaos Engineering Deney Raporu
 
-Öğrenci Adı: [Adınız Soyadınız]
-Numara: [Numaranız]
+Öğrenci Adı: Batuhan Akar
+Numara: 170423007
 
 Yapılan Çalışma:
 
@@ -27,5 +28,5 @@ Notlar:
 - Gerçek ekran görüntüleri `submission/screenshots/` klasörüne eklenecektir. Bu repo içindeki placeholder dosyaları gerçek PNG'ler ile değiştiriniz.
 - İstendiğinde, deney adımlarının komut listesini ve Helm/Chaos Mesh kurulum komutlarını da ekleyebilirim.
 
-Hazırlayan: [Adınız Soyadınız]
-Tarih: [Tarih]
+Hazırlayan: Batuhan Akar
+Tarih: 2025-12-25
